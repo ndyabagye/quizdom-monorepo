@@ -33,16 +33,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	}, []);
 
 	// function to fetch the current user using the token
-	const fetchCurrentUser = async () => {
-		try {
-			// replace with actual endpoint for fetching the current user
-			const response = await axios.get('users/me');
-			setUser(response.data)
-		} catch (error) {
-			console.error("Failed to fetch user data", error)
-			logout();
-		}
-	}
+	// const fetchCurrentUser = async () => {
+	// 	try {
+	// 		// replace with actual endpoint for fetching the current user
+	// 		const response = await axios.get('users/me');
+	// 		setUser(response.data)
+	// 	} catch (error) {
+	// 		console.error("Failed to fetch user data", error)
+	// 		logout();
+	// 	}
+	// }
 
 	const login = (newToken: string) => {
 		localStorage.setItem('token', newToken)

@@ -1,22 +1,29 @@
-FROM python:3.10-slim
+# Builder stage
+FROM python:3.10-slim as builder
+
+# Install postgres client in builder (will be discarded)
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-
-# Create and activate virtual environment
-RUN python3 -m venv /venv
-ENV PATH="/venv/bin:$PATH"
-
-# Install dependencies
 COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN python3 -m venv /venv && \
+    /venv/bin/pip install --no-cache-dir -r requirements.txt && \
+	/venv/bin/pip install --no-cache-dir uvicorn gunicorn
 
-# Copy backend code
+# Runtime stage
+FROM python:3.10-slim
+
+# Install postgres client in runtime image
+RUN apt-get update && \
+	apt-get install -y postgresql-client && \
+	rm -rf /var/lib/apt/lists/*
+	
+WORKDIR /app
+COPY --from=builder /venv /venv
+ENV PATH="/venv/bin:$PATH"
 COPY backend /app
-
-# Copy and make the startup script executable
-COPY docker/backend/start.sh /app/start.sh
-RUN chmod +x /app/start.sh
+COPY docker/backend/start.sh /usr/local/bin/start.sh
+RUN chmod +x /usr/local/bin/start.sh
 
 EXPOSE 8000
-
-CMD ["./start.sh"]
+CMD ["/usr/local/bin/start.sh"]
