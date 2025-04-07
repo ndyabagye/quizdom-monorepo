@@ -1,6 +1,7 @@
 """This is the beginning of execution"""
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from app.routers.auth_routers import router as auth_router
 from app.routers.user_routers import router as user_router
 from app.routers.quiz_routers import router as quiz_router
@@ -21,6 +22,14 @@ app.include_router(user_router)
 app.include_router(quiz_router)
 app.include_router(question_router)
 app.include_router(answer_router)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or specify your frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def read_root():

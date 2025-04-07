@@ -1,40 +1,58 @@
-version: '3.8'
 
-services: # Backend service
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    networks:
+      - app-network
+    depends_on:
+      - db
+    restart: unless-stopped
 
-backend:
-  build:
-    context: ./backend
-    dockerfile: ../docker/backend/Dockerfile
-  ports:
-    - "8000:8000"
-  volumes:
-    - ./backend:/app
-  environment:
-    - ENVIRONMENT=${ENVIRONMENT:-development}
-  networks:
-    - app-network
-  restart: unless-stopped
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend/Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - REACT_APP_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: unless-stopped
 
-# Frontend service
-frontend:
-  build:
-    context: ./frontend
-    dockerfile: ../docker/frontend/Dockerfile
-  ports:
-    - "5173:5173"
-  volumes:
-    - ./frontend:/app
-    - /app/node_modules
-  environment:
-    - ENVIRONMENT=${ENVIRONMENT:-development}
-    - REACT_APP_API_URL=http://localhost:8000
-  depends_on:
-    - backend
-  networks:
-    - app-network
-  restart: unless-stopped
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  pgdata:

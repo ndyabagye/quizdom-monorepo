@@ -1,16 +1,22 @@
-FROM python:3:10-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
+# Create and activate virtual environment
+RUN python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+
+# Install dependencies
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy backend code
+COPY backend /app
+
+# Copy and make the startup script executable
+COPY docker/backend/start.sh /app/start.sh
+RUN chmod +x /app/start.sh
+
 EXPOSE 8000
 
-# Development environment (auto-reload)
-CMD if ["$ENVIRONMENT" == "production"]; then \
-	gunicorn main:app --workers 4 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000; \
-	else \
-	uvicorn main:app --reload --host 0.0.0.0 --port 8000; \
-	fi
+CMD ["./start.sh"]

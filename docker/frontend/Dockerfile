@@ -3,16 +3,20 @@ FROM node:18-alpine as development
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install
 
-COPY . .
+COPY frontend .
+
+# Explicitly run build for production files
+RUN if [ "$ENVIRONMENT" = "production" ]; then \
+	npm run build; \
+	fi
 
 EXPOSE 5173
 
-# Use conditional command based on environment variable
-CMD if ["$ENVIRONMENT" = "production"]; then \
-	npm run build && npm install -g serve && serve -s build -l 5173; \
+CMD if [ "$ENVIRONMENT" = "production" ]; then \
+	npm install -g serve && serve -s build -l 5173; \
 	else \
 	npm run dev; \
 	fi
@@ -22,7 +26,7 @@ FROM node:18-alpine as production
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install --production
 
 COPY --from=development /app/build ./build
