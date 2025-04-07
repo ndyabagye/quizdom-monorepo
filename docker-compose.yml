@@ -1,0 +1,40 @@
+version: '3.8'
+
+services: # Backend service
+
+backend:
+  build:
+    context: ./backend
+    dockerfile: ../docker/backend/Dockerfile
+  ports:
+    - "8000:8000"
+  volumes:
+    - ./backend:/app
+  environment:
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+  networks:
+    - app-network
+  restart: unless-stopped
+
+# Frontend service
+frontend:
+  build:
+    context: ./frontend
+    dockerfile: ../docker/frontend/Dockerfile
+  ports:
+    - "5173:5173"
+  volumes:
+    - ./frontend:/app
+    - /app/node_modules
+  environment:
+    - ENVIRONMENT=${ENVIRONMENT:-development}
+    - REACT_APP_API_URL=http://localhost:8000
+  depends_on:
+    - backend
+  networks:
+    - app-network
+  restart: unless-stopped
+
+networks:
+  app-network:
+    driver: bridge
