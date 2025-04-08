@@ -13,9 +13,17 @@ CMD ["npm", "run", "dev"]
 FROM node:18-alpine AS production
 
 WORKDIR /app
-COPY --from=development /app .
-RUN npm run build && \
-    npm install -g serve
+# Install only production dependencies
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm install --omit=dev
 
+# Copy source code and build the app
+COPY frontend .
+RUN npm run build
+
+# Install a simple static file server
+RUN npm install -g serve
+
+# Serve the production build on port 3000
 EXPOSE 3000
 CMD ["serve", "-s", "dist", "-l", "3000"]

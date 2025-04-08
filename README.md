@@ -1,32 +1,40 @@
-# Quizdom Application
+# 📚 Quizdom – Full Stack Quiz Application
 
-**Quizdom** is a full-stack quiz application that allows users to register, log in, take quizzes, and view results in real-time. It's built using modern web technologies with a focus on speed, developer experience, and scalability.
+**Quizdom** is a modern, full-stack quiz application that allows users to:
+
+- Register and log in
+- Take quizzes
+- View results in real time
+
+Built with speed, developer experience, and scalability in mind using cutting-edge technologies.
 
 ---
 
 ## 🧱 Tech Stack
 
-### 🧠 Why These Technologies?
+### 🔧 Backend
+- **[FastAPI](https://fastapi.tiangolo.com/)**  
+  Fast, async-ready Python web framework with automatic documentation and type safety.
 
-- **Backend: [FastAPI](https://fastapi.tiangolo.com/)**  
-  FastAPI is a modern, fast (high-performance) web framework for Python. It is ideal for building APIs with automatic documentation, type safety, and excellent async support.
+### 🎨 Frontend
+- **[React](https://reactjs.org/)** + **[Vite](https://vitejs.dev/)** + **[Shadcn UI](https://ui.shadcn.com/)**  
+  High-performance UI development with accessible and elegant components built using Tailwind CSS.
 
-- **Frontend: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Shadcn UI](https://ui.shadcn.com/)**  
-  React is a powerful UI library, and Vite offers blazing-fast development and build tooling. Shadcn UI provides accessible and customizable components built with Tailwind CSS, perfect for quickly building a polished interface.
+### 🗃️ Database
+- **[PostgreSQL](https://www.postgresql.org/)**  
+  Robust relational database system suited for structured data and advanced querying.
 
-- **Database: [PostgreSQL](https://www.postgresql.org/)**  
-  A powerful, open-source relational database system, PostgreSQL is well-suited for complex queries and handles structured data with ease.
-
-- **Containerization: [Docker](https://www.docker.com/) & [Docker Compose](https://docs.docker.com/compose/)**  
-  These tools help package the application with all dependencies and simplify development, testing, and deployment—ensuring consistent environments across teams and production.
+### 📦 Containerization
+- **[Docker](https://www.docker.com/)** & **[Docker Compose](https://docs.docker.com/compose/)**  
+  Ensure reproducible environments for development, testing, and production deployment.
 
 ---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### ✅ Prerequisites
 
-Ensure you have the following installed:
+Ensure the following are installed:
 
 - [Docker](https://docs.docker.com/get-docker/)
 - [Docker Compose](https://docs.docker.com/compose/install/)
@@ -35,99 +43,141 @@ Ensure you have the following installed:
 
 ## 🛠️ Setup & Run
 
-### 1. Clone the repository
+### 1️⃣ Clone the Repository
 
 ```bash
 git clone https://your-repo-url.git
 cd quizdom
 ```
 
-### 2. Create a `.env` file at the root
+### 2️⃣ Configure Environment Files
+
+```bash
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+```
+
+### 3️⃣ Root Environment Configuration
+
+Create a `.env` file at the root with:
 
 ```env
 ENVIRONMENT=development
 DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
 SECRET_KEY=your_secret_key_here
+REACT_APP_API_URL=http://localhost:8000
 ```
 
-> 💡 `ENVIRONMENT` controls how the backend runs: `development` uses Uvicorn with hot reload, while `production` uses Gunicorn for performance.
+> 💡 Use `development` for hot-reload via Uvicorn, `production` for Gunicorn performance.
 
 ---
 
-### 3. Build & start the app
+### 4️⃣ Build & Start the App
 
 ```bash
 docker-compose up --build
 ```
 
-Once started, access:
+Access the services:
 
-- 🧠 Backend API: [http://localhost:8000](http://localhost:8000)
-- 💻 Frontend UI: [http://localhost:5173](http://localhost:5173)
-- 🗃️ PostgreSQL: accessible on `localhost:5432`
-
----
-
-### 4. Running in Production
-
-To run in production mode:
-
-1. Update your `.env` file:
-
-   ```env
-   ENVIRONMENT=production
-   ```
-
-2. Rebuild and start containers:
-
-   ```bash
-   docker-compose down
-   docker-compose up --build
-   ```
+- 🧠 Backend: [http://localhost:8000](http://localhost:8000)
+- 💻 Frontend: [http://localhost:5173](http://localhost:5173)
+- 🗃️ PostgreSQL: `localhost:5432` (user: `postgres`, password: `postgres`)
 
 ---
 
-## 📂 Project Structure
+## 🏗️ Running in Production
+
+### 🔧 1. Update Environment
+
+Edit `.env`:
+
+```env
+ENVIRONMENT=production
+DATABASE_URL=postgresql+psycopg2://postgres:postgres@db:5432/postgres
+REACT_APP_API_URL=http://your-domain.com:8000
+```
+
+### 🔁 2. Rebuild & Start
 
 ```bash
-├── backend/                     # Backend source code
-│   ├── .env                     # Backend environment variables (local use)
-│   ├── alembic/                 # Alembic migrations
-│   ├── app/                     # FastAPI app (routes, models, services)
-│   ├── alembic.ini             # Alembic config file
-│   ├── requirements.txt        # Python dependencies
-├── docker/
-│   └── backend/                # Backend Docker setup
-│       ├── Dockerfile          # Backend Dockerfile
-│       └── start.sh            # Startup script for environment-based boot
-├── frontend/                   # Frontend source code
-│   ├── .env                    # Frontend environment variables
-│   ├── .env.template           # Example env for setup
-│   ├── src/                    # React + Vite application source
-│   └── public/                 # Static assets
-├── docker-compose.yml         # Service orchestration (frontend, backend, db)
-├── README.md                  # Project overview and setup instructions
-└── .gitignore                 # Files to ignore in version control
+docker-compose down -v
+docker-compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+### 🌐 3. Access Production Endpoints
+
+```bash
+Frontend: http://localhost:3000
+Backend API: http://localhost:8000
+```
+
+### 🧰 4. Management Commands
+
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop all services
+docker-compose down
+
+# Full cleanup (remove volumes too)
+docker-compose down -v
 ```
 
 ---
 
-## 🧪 Future Improvements
+## 🗂️ Project Structure
 
-- 🔐 JWT refresh tokens for extended auth sessions
-- 📊 Quiz statistics dashboard
-- 🛠 Admin panel for quiz/question management
-- ☁️ Docker Swarm / Kubernetes deployment support
+```bash
+├── backend/
+│   ├── .env                  # Local backend config
+│   ├── alembic/              # DB migrations
+│   ├── app/                  # FastAPI app (routes, models, etc.)
+│   ├── alembic.ini           # Migration config
+│   └── requirements.txt      # Backend dependencies
+├── docker/
+│   └── backend/
+│       ├── Dockerfile        # Backend Dockerfile
+│       └── start.sh          # Boot script (env-aware)
+├── frontend/
+│   ├── .env                  # Local frontend config
+│   ├── .env.template         # Setup template
+│   ├── src/                  # React + Vite app
+│   └── public/               # Static assets
+├── docker-compose.yml        # Main service configuration
+├── README.md                 # Project overview
+└── .gitignore                # Git exclusion list
+```
 
 ---
 
-## 👨‍💻 Maintainers
+## ✨ Key Features
 
-- Jesse James Kigula – [jkigula@icloud.com](mailto:jkigula@icloud.com)
-- Ndyabagye Henry – [ndyabagyehenrytusi@gmail.com](mailto:ndyabagyehenrytusi@gmail.com)
+- ✅ User Authentication
+- 🧩 Quiz Creation & Management
+- 📈 Real-Time Results
+- 🐳 Containerized Deployment
+- ♻️ Hot-Reload for Development
+
+---
+
+## 🔮 Planned Improvements
+
+- 🔐 JWT Refresh Tokens
+- 📊 Quiz Statistics Dashboard
+- 🧑‍💼 Admin Panel
+- ☁️ Docker Swarm / Kubernetes Deployment Support
+
+---
+
+## 👨‍🔧 Maintainers
+
+- **Jesse James Kigula** – [jkigula@icloud.com](mailto:jkigula@icloud.com)  
+- **Ndyabagye Henry** – [ndyabagyehenrytusi@gmail.com](mailto:ndyabagyehenrytusi@gmail.com)
 
 ---
 
 ## 📄 License
 
-MIT – feel free to use and modify.
+**MIT** – free to use, modify, and distribute.

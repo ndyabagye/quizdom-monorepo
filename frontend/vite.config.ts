@@ -16,11 +16,14 @@ export default defineConfig({
     },
   },
   server: {
-    host: true,  // Add this
-    port: 5173,
+    host: true,  // Allow external access (e.g., Docker or LAN)
+    port: 5173,   // Dev mode port
     strictPort: true,
   },
   preview: {
     port: 3000,
+  },
+  build: {
+    outDir: 'dist',
   }
 })
